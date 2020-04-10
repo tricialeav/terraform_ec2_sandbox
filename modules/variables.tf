@@ -23,7 +23,22 @@ variable "availability_zone" {
   type        = string
 }
 
-variable "sg_cidr_blocks" {
-  description = "List of CIDR blocks."
-  type        = list(string)
+variable "private_ip" {
+  description = "IP address of user."
+  type        = string
+}
+
+variable "ami" {
+  description = "The AMI to use for the instance."
+  type        = string
+}
+
+variable "key_name" {
+  description = "The key pair used to log into the AWS EC2 Instances."
+  type        = string
+}
+
+variable "instance_type" {
+  description = "The type of instance to start. Updates to this field will trigger a stop/start of the EC2 instance."
+  type        = string
 }

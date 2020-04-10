@@ -10,5 +10,10 @@ variable "region" {
 
 variable "availability_zone" {
   description = "The Availability Zone used for resource hosting."
-  type = string
+  type        = string
+}
+
+variable "key_name" {
+  description = "The key pair used to log into the AWS EC2 Instances."
+  type        = string
 }

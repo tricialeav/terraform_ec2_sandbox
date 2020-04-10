@@ -1,6 +1,6 @@
-resource "aws_security_group" "security_group" {
-  name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
+resource "aws_security_group" "sg_all_instances" {
+  name        = "sg_ssh_access"
+  description = "Allow SSH traffic"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -8,13 +8,74 @@ resource "aws_security_group" "security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = var.sg_cidr_blocks
+    cidr_blocks = [var.private_ip]
   }
 
   egress {
     from_port = 0
     to_port   = 0
     protocol  = "-1"
+  }
+
+  tags = var.tags
+}
+
+resource "aws_security_group" "sg_public_instances" {
+  name        = "sg_public"
+  description = "Allow SSH inbound traffic"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "Allow https from internet"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow http from internet"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+  }
+
+  tags = var.tags
+}
+
+resource "aws_security_group" "sg_private_instances" {
+  name        = "sg_private"
+  description = "Allow traffic from public subnet"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "Allow https from public subnet"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = var.public_subnet_cidr_blocks
+  }
+
+  ingress {
+    description = "Allow http from public subnet"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = var.public_subnet_cidr_blocks
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "tcp"
+    cidr_blocks = var.public_subnet_cidr_blocks
   }
 
   tags = var.tags

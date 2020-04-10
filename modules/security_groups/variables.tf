@@ -8,7 +8,12 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "sg_cidr_blocks" {
-  description = "List of CIDR blocks."
+variable "private_ip" {
+  description = "IP address of user."
+  type        = string
+}
+
+variable "public_subnet_cidr_blocks" {
+  description = "The CIDR block for the VPC."
   type        = list(string)
 }
