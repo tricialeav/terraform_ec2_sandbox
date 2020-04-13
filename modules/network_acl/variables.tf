@@ -3,14 +3,14 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "egress" {
+variable "outbound_nacl_rules" {
   description = "Specifies an egress rule."
-  type        = any
+  type        = list(any)
 }
 
-variable "ingress" {
+variable "inbound_nacl_rules" {
   description = "Specifies an ingress rule."
-  type        = any
+  type        = list(any)
 }
 
 variable "subnet_ids" {
@@ -20,5 +20,10 @@ variable "subnet_ids" {
 
 variable "tags" {
   description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+}
+
+variable "nacl_tags" {
+  description = "A mapping of tags to assign to the Network ACL."
   type        = map(string)
 }

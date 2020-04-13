@@ -3,22 +3,23 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "tags" {
-  description = "A mapping of tags to assign to the resource."
-  type        = map(string)
+variable "public" {
+  description = "Indicates that the route table is in a public subnet."
+  type        = bool
+  default     = false
 }
 
-variable "private_subnet_cidr_blocks" {
-  description = "The CIDR block for the VPC."
-  type        = list(string)
-}
-
-variable "public_subnet_cidr_blocks" {
-  description = "The CIDR block for the VPC."
+variable "cidr_blocks" {
+  description = "The CIDR block for the subnet."
   type        = list(string)
 }
 
 variable "availability_zone" {
   description = "The AZ for the subnets."
   type        = string
+}
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
 }

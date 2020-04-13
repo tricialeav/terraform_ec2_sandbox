@@ -4,13 +4,26 @@ module "vpc" {
   tags           = var.tags
 }
 
-module "subnets" {
-  source                     = "./subnets"
-  vpc_id                     = module.vpc.vpc_id
-  private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
-  public_subnet_cidr_blocks  = var.public_subnet_cidr_blocks
-  availability_zone          = var.availability_zone
-  tags                       = var.tags
+module "public_subnets" {
+  source            = "./subnets"
+  public            = true
+  vpc_id            = module.vpc.vpc_id
+  cidr_blocks       = var.public_subnet_cidr_blocks
+  availability_zone = var.availability_zone
+  tags       = {
+    Name = "Public Subnet"
+  }
+}
+
+module "private_subnets" {
+  source            = "./subnets"
+  public            = false
+  vpc_id            = module.vpc.vpc_id
+  cidr_blocks       = var.private_subnet_cidr_blocks
+  availability_zone = var.availability_zone
+  tags       = {
+    Name = "Private Subnet"
+  }
 }
 
 module "security_groups" {
@@ -27,67 +40,222 @@ module "igw" {
   tags   = var.tags
 }
 
-module "network_acl" {
+module "public_route_table" {
+  source               = "./route_tables"
+  public               = true
+  vpc_id               = module.vpc.vpc_id
+  public_internet_cidr = var.public_internet_cidr
+  gateway_id           = module.igw.igw_id
+  vpc_cidr_block       = var.vpc_cidr_block
+  tags                 = var.tags
+  rt_tags              = var.public_tags
+  subnet_ids           = module.public_subnets.subnet_ids
+}
+
+module "private_route_table" {
+  source         = "./route_tables"
+  public         = false
+  vpc_id         = module.vpc.vpc_id
+  vpc_cidr_block = var.vpc_cidr_block
+  tags           = var.tags
+  rt_tags        = var.private_tags
+  subnet_ids     = module.private_subnets.subnet_ids
+}
+
+module "public_network_acl" {
   source     = "./network_acl"
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.subnets.private_subnet_ids
-  egress = [
+  subnet_ids = module.public_subnets.subnet_ids
+  inbound_nacl_rules = [
     {
-      protocol   = "tcp"
-      rule_no    = 100
-      action     = "allow"
-      cidr_block = var.vpc_cidr_block
-      from_port  = 443
-      to_port    = 443
+      rule_number = 100
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = 443
+      to_port     = 443
+      icmp_type   = null
+      icmp_code   = null
     },
     {
-      protocol   = "tcp"
-      rule_no    = 110
-      action     = "allow"
-      cidr_block = var.private_ip
-      from_port  = 22
-      to_port    = 22
-    }
-  ]
-  ingress = [
-    {
-      protocol   = "tcp"
-      rule_no    = 100
-      action     = "allow"
-      cidr_block = var.vpc_cidr_block
-      from_port  = 443
-      to_port    = 443
+      rule_number = 110
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = 80
+      to_port     = 80
+      icmp_type   = null
+      icmp_code   = null
     },
     {
-      protocol   = "tcp"
-      rule_no    = 110
-      action     = "allow"
-      cidr_block = var.private_ip
-      from_port  = 22
-      to_port    = 22
+      rule_number = 120
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.private_ip
+      from_port   = 22
+      to_port     = 22
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 130
+      protocol    = "icmp"
+      rule_action = "allow"
+      cidr_block  = var.private_ip
+      from_port   = 0
+      to_port     = 0
+      icmp_type   = "-1"
+      icmp_code   = "-1"
     }
   ]
-  tags = var.tags
+
+  outbound_nacl_rules = [
+    {
+      rule_number = 100
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = 443
+      to_port     = 443
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 110
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = 80
+      to_port     = 80
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 120
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.private_ip
+      from_port   = 22
+      to_port     = 22
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 130
+      protocol    = "icmp"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = 0
+      to_port     = 0
+      icmp_type   = "-1"
+      icmp_code   = "-1"
+    }
+  ]
+
+  tags      = var.tags
+  nacl_tags = var.public_tags
+}
+
+module "private_network_acl" {
+  source     = "./network_acl"
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.private_subnets.subnet_ids
+
+  inbound_nacl_rules = [
+    {
+      rule_number = 100
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.vpc_cidr_block
+      from_port   = 443
+      to_port     = 443
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 110
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.private_ip
+      from_port   = 22
+      to_port     = 22
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 120
+      protocol    = "icmp"
+      rule_action = "allow"
+      cidr_block  = var.private_ip
+      from_port   = 0
+      to_port     = 0
+      icmp_type   = "-1"
+      icmp_code   = "-1"
+    }
+  ]
+
+  outbound_nacl_rules = [
+    {
+      rule_number = 100
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.vpc_cidr_block
+      from_port   = 443
+      to_port     = 443
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 110
+      protocol    = "tcp"
+      rule_action = "allow"
+      cidr_block  = var.private_ip
+      from_port   = 22
+      to_port     = 22
+      icmp_type   = null
+      icmp_code   = null
+    },
+    {
+      rule_number = 120
+      protocol    = "icmp"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = 0
+      to_port     = 0
+      icmp_type   = "-1"
+      icmp_code   = "-1"
+    }
+  ]
+
+  tags      = var.tags
+  nacl_tags = var.private_tags
 }
 
 module "ec2_private_instances" {
-  source                 = "./private_ec2"
+  source                 = "./ec2"
   ami                    = var.ami
   key_name               = var.key_name
   instance_type          = var.instance_type
   availability_zone      = var.availability_zone
   vpc_security_group_ids = [module.security_groups.sg_all_instances, module.security_groups.sg_private_instances]
-  private_subnet_ids     = module.subnets.private_subnet_ids
+  subnet_ids             = module.private_subnets.subnet_ids
   tags                   = var.tags
+  ec2_tags               = {
+    Name = "Private EC2"
+  }
 }
 
 module "ec2_public_instances" {
-  source                 = "./public_ec2"
-  ami                    = var.ami
-  key_name               = var.key_name
-  instance_type          = var.instance_type
-  availability_zone      = var.availability_zone
-  vpc_security_group_ids = [module.security_groups.sg_all_instances, module.security_groups.sg_public_instances]
-  public_subnet_ids      = module.subnets.public_subnet_ids
-  tags                   = var.tags
+  source                      = "./ec2"
+  ami                         = var.ami
+  key_name                    = var.key_name
+  instance_type               = var.instance_type
+  availability_zone           = var.availability_zone
+  vpc_security_group_ids      = [module.security_groups.sg_all_instances, module.security_groups.sg_public_instances]
+  subnet_ids                  = module.public_subnets.subnet_ids
+  associate_public_ip_address = true
+  tags                        = var.tags
+  ec2_tags               = {
+    Name = "Public EC2"
+  }
 }

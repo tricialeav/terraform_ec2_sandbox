@@ -3,6 +3,16 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "public_tags" {
+  description = "Designates a public resource."
+  type        = map(string)
+}
+
+variable "private_tags" {
+  description = "Designates a private resource."
+  type        = map(string)
+}
+
 variable "vpc_cidr_block" {
   description = "The CIDR block for the VPC."
   type        = string
@@ -16,6 +26,11 @@ variable "private_subnet_cidr_blocks" {
 variable "public_subnet_cidr_blocks" {
   description = "The CIDR block for the VPC."
   type        = list(string)
+}
+
+variable "public_internet_cidr" {
+  description = "CIDR block to allow public access."
+  type        = string
 }
 
 variable "availability_zone" {

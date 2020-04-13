@@ -1,6 +1,6 @@
 resource "aws_security_group" "sg_all_instances" {
   name        = "sg_ssh_access"
-  description = "Allow SSH traffic"
+  description = "Allow SSH traffic."
   vpc_id      = var.vpc_id
 
   ingress {
@@ -11,22 +11,33 @@ resource "aws_security_group" "sg_all_instances" {
     cidr_blocks = [var.private_ip]
   }
 
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+  ingress {
+    description = "Ping access"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
 
   tags = var.tags
 }
 
 resource "aws_security_group" "sg_public_instances" {
   name        = "sg_public"
-  description = "Allow SSH inbound traffic"
+  description = "Allow public inbound traffic."
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow https from internet"
+    description = "Allow https from internet."
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -34,7 +45,7 @@ resource "aws_security_group" "sg_public_instances" {
   }
 
   ingress {
-    description = "Allow http from internet"
+    description = "Allow http from internet."
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -42,9 +53,10 @@ resource "aws_security_group" "sg_public_instances" {
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = var.tags
@@ -52,11 +64,11 @@ resource "aws_security_group" "sg_public_instances" {
 
 resource "aws_security_group" "sg_private_instances" {
   name        = "sg_private"
-  description = "Allow traffic from public subnet"
+  description = "Allow traffic from public subnet."
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow https from public subnet"
+    description = "Allow https from public subnet."
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -64,7 +76,7 @@ resource "aws_security_group" "sg_private_instances" {
   }
 
   ingress {
-    description = "Allow http from public subnet"
+    description = "Allow http from public subnet."
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"

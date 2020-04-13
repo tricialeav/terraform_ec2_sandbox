@@ -23,12 +23,23 @@ variable "vpc_security_group_ids" {
   type        = list(string)
 }
 
-variable "private_subnet_ids" {
-  description = "The private VPC Subnet IDs to launch in."
+variable "subnet_ids" {
+  description = "The VPC Subnet IDs to launch in."
   type        = list(string)
+}
+
+variable "associate_public_ip_address" {
+  description = "Associate a public ip address with an instance in a VPC."
+  type        = bool
+  default     = false
 }
 
 variable "tags" {
   description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+}
+
+variable "ec2_tags" {
+  description = "A mapping of tags to assign to the EC2 instance."
   type        = map(string)
 }

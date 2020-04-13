@@ -1,30 +1,38 @@
-resource "aws_network_acl" "main" {
+resource "aws_network_acl" "nacl" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
-  dynamic "egress" {
-    for_each = var.egress
-    content {
-      protocol   = egress.value["protocol"]
-      rule_no    = egress.value["rule_no"]
-      action     = egress.value["action"]
-      cidr_block = egress.value["cidr_block"]
-      from_port  = egress.value["from_port"]
-      to_port    = egress.value["to_port"]
-    }
-  }
+  tags = merge(var.tags, var.nacl_tags)
+}
 
-  dynamic "ingress" {
-    for_each = var.ingress
-    content {
-      protocol   = ingress.value["protocol"]
-      rule_no    = ingress.value["rule_no"]
-      action     = ingress.value["action"]
-      cidr_block = ingress.value["cidr_block"]
-      from_port  = ingress.value["from_port"]
-      to_port    = ingress.value["to_port"]
-    }
-  }
+resource "aws_network_acl_rule" "inbound" {
+  count = length(var.inbound_nacl_rules)
 
-  tags = var.tags
+  network_acl_id = aws_network_acl.nacl.id
+
+  egress      = false
+  rule_number = var.inbound_nacl_rules[count.index]["rule_number"]
+  rule_action = var.inbound_nacl_rules[count.index]["rule_action"]
+  from_port   = var.inbound_nacl_rules[count.index]["from_port"]
+  to_port     = var.inbound_nacl_rules[count.index]["to_port"]
+  protocol    = var.inbound_nacl_rules[count.index]["protocol"]
+  icmp_type   = var.inbound_nacl_rules[count.index]["icmp_type"]
+  icmp_code   = var.inbound_nacl_rules[count.index]["icmp_code"]
+  cidr_block  = var.inbound_nacl_rules[count.index]["cidr_block"]
+}
+
+resource "aws_network_acl_rule" "outbound" {
+  count = length(var.outbound_nacl_rules)
+
+  network_acl_id = aws_network_acl.nacl.id
+
+  egress      = true
+  rule_number = var.outbound_nacl_rules[count.index]["rule_number"]
+  rule_action = var.outbound_nacl_rules[count.index]["rule_action"]
+  from_port   = var.outbound_nacl_rules[count.index]["from_port"]
+  to_port     = var.outbound_nacl_rules[count.index]["to_port"]
+  protocol    = var.outbound_nacl_rules[count.index]["protocol"]
+  icmp_type   = var.inbound_nacl_rules[count.index]["icmp_type"]
+  icmp_code   = var.inbound_nacl_rules[count.index]["icmp_code"]
+  cidr_block  = var.outbound_nacl_rules[count.index]["cidr_block"]
 }
