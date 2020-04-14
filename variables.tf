@@ -1,6 +1,7 @@
 variable "profile" {
   description = "The provider profile to use."
   type        = string
+  default = null
 }
 
 variable "region" {
