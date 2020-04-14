@@ -45,6 +45,7 @@ module "public_route_table" {
   public               = true
   vpc_id               = module.vpc.vpc_id
   public_internet_cidr = var.public_internet_cidr
+  ipv6_public_internet_cidr = var.ipv6_public_internet_cidr
   gateway_id           = module.igw.igw_id
   vpc_cidr_block       = var.vpc_cidr_block
   tags                 = var.tags

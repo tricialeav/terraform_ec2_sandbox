@@ -19,6 +19,7 @@ module "ec2_sandbox" {
   public_subnet_cidr_blocks  = ["10.0.0.0/18"]
   private_subnet_cidr_blocks = ["10.0.64.0/18"]
   public_internet_cidr       = "0.0.0.0/0"
+  ipv6_public_internet_cidr = "::/0"
   public_tags = {
     Type = "Public"
   }

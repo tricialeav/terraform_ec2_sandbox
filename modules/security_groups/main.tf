@@ -1,6 +1,6 @@
 resource "aws_security_group" "sg_all_instances" {
-  name        = "sg_ssh_access"
-  description = "Allow SSH traffic."
+  name        = "sg_ssh_ping_access"
+  description = "Allow SSH and ICMP traffic."
   vpc_id      = var.vpc_id
 
   ingress {
@@ -13,7 +13,7 @@ resource "aws_security_group" "sg_all_instances" {
 
   ingress {
     description = "Ping access"
-    from_port   = 0
+    from_port   = 8
     to_port     = 0
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]

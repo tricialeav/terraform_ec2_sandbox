@@ -29,8 +29,13 @@ variable "public_subnet_cidr_blocks" {
 }
 
 variable "public_internet_cidr" {
-  description = "CIDR block to allow public access."
+  description = "CIDR block to allow public access via ipv4."
   type        = string
+}
+
+variable "ipv6_public_internet_cidr" {
+  description = "CIDR block to allow public access via ipv6."
+  type = string
 }
 
 variable "availability_zone" {

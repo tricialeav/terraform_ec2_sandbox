@@ -15,6 +15,12 @@ variable "public_internet_cidr" {
   default     = null
 }
 
+variable "ipv6_public_internet_cidr" {
+  description = "CIDR block to allow public access via ipv6."
+  type = string
+  default = null
+}
+
 variable "gateway_id" {
   description = "Identifier of a VPC internet gateway or a virtual private gateway."
   type        = string
