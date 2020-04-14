@@ -41,7 +41,7 @@ This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandb
 2. Terraform version 0.12
     1. [Download Terraform](https://www.terraform.io/downloads.html)
 3. An IDE of your choice
-4. A keypair used to SSH into your linux instances. Please see [#-ssh-instructions] below.
+4. A keypair used to SSH into your linux instances. Please see [SSH Instructions](#-ssh-instructions) below.
 
 # Project Setup
 
