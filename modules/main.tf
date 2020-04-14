@@ -133,21 +133,11 @@ module "private_network_acl" {
       rule_number = 110
       protocol    = "tcp"
       rule_action = "allow"
-      cidr_block  = var.private_ip
-      from_port   = 22
-      to_port     = 22
+      cidr_block  = var.vpc_cidr_block
+      from_port   = 80
+      to_port     = 80
       icmp_type   = null
       icmp_code   = null
-    },
-    {
-      rule_number = 120
-      protocol    = "icmp"
-      rule_action = "allow"
-      cidr_block  = var.private_ip
-      from_port   = 0
-      to_port     = 0
-      icmp_type   = "-1"
-      icmp_code   = "-1"
     }
   ]
 

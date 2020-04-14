@@ -16,7 +16,7 @@ resource "aws_security_group" "sg_all_instances" {
     from_port   = 8
     to_port     = 0
     protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.private_ip]
   }
 
   egress {

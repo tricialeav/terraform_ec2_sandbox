@@ -1,6 +1,6 @@
 provider "aws" {
   version = "~> 2.0"
-  region  = var.region
+  region  = "us-west-2"
   profile = var.profile
 }
 
@@ -26,7 +26,7 @@ module "ec2_sandbox" {
   private_tags = {
     Type = "Private"
   }
-  availability_zone = var.availability_zone
+  availability_zone = "us-west-2a"
   private_ip        = join("", [trimspace(data.http.get_public_ip.body), "/32"])
   ami               = "ami-0d6621c01e8c2de2c"
   key_name          = aws_key_pair.instance_key_pair.key_name

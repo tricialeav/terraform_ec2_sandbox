@@ -1,5 +1,38 @@
 # In Progress
 
+# Introduction
+
+This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandbox environment in the us-west-2 (Oregon) region/us-west-2a Availability Zone. The environment includes: 
+
+1. Single VPC with an Internet Gateway
+2. Public Subnet
+    1. Public Route Table
+        1. Public ipv4 destination with IGW target
+        2. Public ipv6 destination with IGW target
+        3. Local target 
+    2. Public Subnet Network ACL
+        1. Inbound Allow
+            1. HTTP (public)
+            2. HTTPS (public)
+            3. SSH (My IP)
+            4. ICMP (My IP)
+    3. Public Security Groups
+        1. Allow Ping and SSH from my IP
+        2. Allow HTTP and HTTPS from public internet
+    4. Public EC2 Instance
+        1. Amazon Linux 2 AMI 2.0.20200406.0 x86_64 HVM gp2 t2.micro
+        2. IPV4 Public IP address
+3. Private Subnet
+    1. Private Route Table
+        1. Local Target
+    2. Private Subnet Network ACL
+        1. HTTP (from VPC CIDR)
+        2. HTTPS (from VPC CIDR)
+    3. Private Security Group
+        1. Allow HTTP and HTTPS from Public Subnet CIDR
+    4. Private EC2 Instance
+        1. Amazon Linux 2 AMI 2.0.20200406.0 x86_64 HVM gp2 t2.micro
+
 ## Setting up SSH Access To Your Instance
 
 Please see the AWS Documentation regarding SSH access found [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws).
