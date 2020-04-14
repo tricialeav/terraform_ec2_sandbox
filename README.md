@@ -41,7 +41,7 @@ This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandb
 2. Terraform version 0.12
     1. [Download Terraform](https://www.terraform.io/downloads.html)
 3. An IDE of your choice
-4. A keypair used to SSH into your linux instances. Please see [SSH Instructions](#-ssh-instructions) below.
+4. A keypair used to SSH into your linux instances. Please see [SSH Instructions](#ssh-instructions) below.
 
 # Project Setup
 
@@ -55,7 +55,7 @@ This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandb
 
 1. Clone the repo to your local machine. 
 2. Open the project using an IDE of your choosing. 
-3. In the root folder, create a file called "terraform.tfvars". This will be used to pass in your [SSH credentials](#-ssh-instructions). 
+3. In the root folder, create a file called "terraform.tfvars". This will be used to pass in your [SSH credentials](#ssh-instructions). 
 4. In your terminal, navigate to the root of the project folder. 
 5. Allow Terraform to use your AWS Programmatic Access credentials:
     1. Option 1 (recommended): 
