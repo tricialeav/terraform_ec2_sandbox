@@ -3,11 +3,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "outbound_nacl_rules" {
-  description = "Specifies an egress rule."
-  type        = list(any)
-}
-
 variable "inbound_nacl_rules" {
   description = "Specifies an ingress rule."
   type        = list(any)
