@@ -1,3 +1,5 @@
+# TODO Update docs for multi-AZ - In Progress 
+
 # Terraform AWS EC2 Sandbox Environment
 
 # Introduction
