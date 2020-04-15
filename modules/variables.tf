@@ -18,16 +18,6 @@ variable "vpc_cidr_block" {
   type        = string
 }
 
-variable "private_subnet_cidr_blocks" {
-  description = "The CIDR block for the VPC."
-  type        = list(string)
-}
-
-variable "public_subnet_cidr_blocks" {
-  description = "The CIDR block for the VPC."
-  type        = list(string)
-}
-
 variable "public_internet_cidr" {
   description = "CIDR block to allow public access via ipv4."
   type        = string
@@ -35,12 +25,12 @@ variable "public_internet_cidr" {
 
 variable "ipv6_public_internet_cidr" {
   description = "CIDR block to allow public access via ipv6."
-  type = string
+  type        = string
 }
 
-variable "availability_zone" {
+variable "availability_zones" {
   description = "The AZ for the subnets."
-  type        = string
+  type        = list(string)
 }
 
 variable "private_ip" {

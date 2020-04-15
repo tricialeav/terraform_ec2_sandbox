@@ -1,4 +1,4 @@
-resource "aws_instance" "public_linux_instances" {
+resource "aws_instance" "ec2" {
   count                       = length(var.subnet_ids)
   ami                         = var.ami
   availability_zone           = var.availability_zone

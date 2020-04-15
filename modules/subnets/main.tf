@@ -1,8 +1,13 @@
+locals {
+  az_count = length(var.availability_zones)
+}
+
+
 resource "aws_subnet" "subnet" {
-  for_each          = toset(var.cidr_blocks)
+  count             = local.az_count
   vpc_id            = var.vpc_id
-  cidr_block        = each.value
-  availability_zone = var.availability_zone
+  cidr_block        = cidrsubnet(var.cidr_blocks, ceil(log(var.total_subnets, 2)), count.index)
+  availability_zone = var.availability_zones[count.index]
 
   tags = var.tags
 }

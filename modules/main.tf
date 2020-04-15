@@ -5,33 +5,35 @@ module "vpc" {
 }
 
 module "public_subnets" {
-  source            = "./subnets"
-  public            = true
-  vpc_id            = module.vpc.vpc_id
-  cidr_blocks       = var.public_subnet_cidr_blocks
-  availability_zone = var.availability_zone
-  tags       = {
+  source             = "./subnets"
+  public             = true
+  vpc_id             = module.vpc.vpc_id
+  cidr_blocks        = cidrsubnet(var.vpc_cidr_block, 2, 1)
+  availability_zones = var.availability_zones
+  total_subnets      = 2
+  tags = {
     Name = "Public Subnet"
   }
 }
 
 module "private_subnets" {
-  source            = "./subnets"
-  public            = false
-  vpc_id            = module.vpc.vpc_id
-  cidr_blocks       = var.private_subnet_cidr_blocks
-  availability_zone = var.availability_zone
-  tags       = {
+  source             = "./subnets"
+  public             = false
+  vpc_id             = module.vpc.vpc_id
+  cidr_blocks        = cidrsubnet(var.vpc_cidr_block, 2, 2)
+  availability_zones = var.availability_zones
+  total_subnets      = 2
+  tags = {
     Name = "Private Subnet"
   }
 }
 
 module "security_groups" {
-  source                    = "./security_groups"
-  vpc_id                    = module.vpc.vpc_id
-  private_ip                = var.private_ip
-  public_subnet_cidr_blocks = var.public_subnet_cidr_blocks
-  tags                      = var.tags
+  source     = "./security_groups"
+  vpc_id     = module.vpc.vpc_id
+  private_ip = var.private_ip
+  # public_subnet_cidr_blocks = var.public_subnet_cidr_blocks
+  tags = var.tags
 }
 
 module "igw" {
@@ -41,16 +43,16 @@ module "igw" {
 }
 
 module "public_route_table" {
-  source               = "./route_tables"
-  public               = true
-  vpc_id               = module.vpc.vpc_id
-  public_internet_cidr = var.public_internet_cidr
+  source                    = "./route_tables"
+  public                    = true
+  vpc_id                    = module.vpc.vpc_id
+  public_internet_cidr      = var.public_internet_cidr
   ipv6_public_internet_cidr = var.ipv6_public_internet_cidr
-  gateway_id           = module.igw.igw_id
-  vpc_cidr_block       = var.vpc_cidr_block
-  tags                 = var.tags
-  rt_tags              = var.public_tags
-  subnet_ids           = module.public_subnets.subnet_ids
+  gateway_id                = module.igw.igw_id
+  vpc_cidr_block            = var.vpc_cidr_block
+  tags                      = var.tags
+  rt_tags                   = var.public_tags
+  subnet_ids                = module.public_subnets.subnet_ids
 }
 
 module "private_route_table" {
@@ -145,31 +147,31 @@ module "private_network_acl" {
   nacl_tags = var.private_tags
 }
 
-module "ec2_private_instances" {
-  source                 = "./ec2"
-  ami                    = var.ami
-  key_name               = var.key_name
-  instance_type          = var.instance_type
-  availability_zone      = var.availability_zone
-  vpc_security_group_ids = [module.security_groups.sg_all_instances, module.security_groups.sg_private_instances]
-  subnet_ids             = module.private_subnets.subnet_ids
-  tags                   = var.tags
-  ec2_tags               = {
-    Name = "Private EC2"
-  }
-}
+# module "ec2_private_instances" {
+#   source                 = "./ec2"
+#   ami                    = var.ami
+#   key_name               = var.key_name
+#   instance_type          = var.instance_type
+#   availability_zone      = var.availability_zone
+#   vpc_security_group_ids = [module.security_groups.sg_private_instances]
+#   subnet_ids             = module.private_subnets.subnet_ids
+#   tags                   = var.tags
+#   ec2_tags = {
+#     Name = "Private EC2"
+#   }
+# }
 
-module "ec2_public_instances" {
-  source                      = "./ec2"
-  ami                         = var.ami
-  key_name                    = var.key_name
-  instance_type               = var.instance_type
-  availability_zone           = var.availability_zone
-  vpc_security_group_ids      = [module.security_groups.sg_all_instances, module.security_groups.sg_public_instances]
-  subnet_ids                  = module.public_subnets.subnet_ids
-  associate_public_ip_address = true
-  tags                        = var.tags
-  ec2_tags               = {
-    Name = "Public EC2"
-  }
-}
+# module "ec2_public_instances" {
+#   source                      = "./ec2"
+#   ami                         = var.ami
+#   key_name                    = var.key_name
+#   instance_type               = var.instance_type
+#   availability_zone           = var.availability_zone
+#   vpc_security_group_ids      = [module.security_groups.sg_public_instances]
+#   subnet_ids                  = module.public_subnets.subnet_ids
+#   associate_public_ip_address = true
+#   tags                        = var.tags
+#   ec2_tags = {
+#     Name = "Public EC2"
+#   }
+# }

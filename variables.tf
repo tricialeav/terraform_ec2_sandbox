@@ -1,7 +1,7 @@
 variable "profile" {
   description = "The provider profile to use."
   type        = string
-  default = null
+  default     = null
 }
 
 variable "key_name" {

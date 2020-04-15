@@ -11,12 +11,17 @@ variable "public" {
 
 variable "cidr_blocks" {
   description = "The CIDR block for the subnet."
+  type        = string
+}
+
+variable "availability_zones" {
+  description = "The AZ for the subnets."
   type        = list(string)
 }
 
-variable "availability_zone" {
-  description = "The AZ for the subnets."
-  type        = string
+variable "total_subnets" {
+  description = "The total number of subnets desired."
+  type        = number
 }
 
 variable "tags" {
