@@ -32,7 +32,6 @@ module "security_groups" {
   source     = "./security_groups"
   vpc_id     = module.vpc.vpc_id
   private_ip = var.private_ip
-  # public_subnet_cidr_blocks = var.public_subnet_cidr_blocks
   tags = var.tags
 }
 
@@ -147,31 +146,29 @@ module "private_network_acl" {
   nacl_tags = var.private_tags
 }
 
-# module "ec2_private_instances" {
-#   source                 = "./ec2"
-#   ami                    = var.ami
-#   key_name               = var.key_name
-#   instance_type          = var.instance_type
-#   availability_zone      = var.availability_zone
-#   vpc_security_group_ids = [module.security_groups.sg_private_instances]
-#   subnet_ids             = module.private_subnets.subnet_ids
-#   tags                   = var.tags
-#   ec2_tags = {
-#     Name = "Private EC2"
-#   }
-# }
+module "ec2_private_instances" {
+  source                 = "./ec2"
+  ami                    = var.ami
+  key_name               = var.key_name
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [module.security_groups.sg_private_instances]
+  subnet_ids             = module.private_subnets.subnet_ids
+  tags                   = var.tags
+  ec2_tags = {
+    Name = "Private EC2"
+  }
+}
 
-# module "ec2_public_instances" {
-#   source                      = "./ec2"
-#   ami                         = var.ami
-#   key_name                    = var.key_name
-#   instance_type               = var.instance_type
-#   availability_zone           = var.availability_zone
-#   vpc_security_group_ids      = [module.security_groups.sg_public_instances]
-#   subnet_ids                  = module.public_subnets.subnet_ids
-#   associate_public_ip_address = true
-#   tags                        = var.tags
-#   ec2_tags = {
-#     Name = "Public EC2"
-#   }
-# }
+module "ec2_public_instances" {
+  source                      = "./ec2"
+  ami                         = var.ami
+  key_name                    = var.key_name
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [module.security_groups.sg_public_instances]
+  subnet_ids                  = module.public_subnets.subnet_ids
+  associate_public_ip_address = true
+  tags                        = var.tags
+  ec2_tags = {
+    Name = "Public EC2"
+  }
+}
