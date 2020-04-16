@@ -8,6 +8,11 @@ variable "inbound_nacl_rules" {
   type        = list(any)
 }
 
+variable "outbound_nacl_rules" {
+  description = "Specifies an egress rule."
+  type        = list(any)
+}
+
 variable "subnet_ids" {
   description = "A list of Subnet IDs to apply the ACL to."
   type        = list(string)

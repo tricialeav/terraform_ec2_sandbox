@@ -4,19 +4,11 @@ resource "aws_security_group" "sg_public_instances" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow https from internet."
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "Allow http from internet."
+    description = "Allow http from ALB."
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.sg_alb.id]
   }
 
   ingress {
@@ -51,14 +43,6 @@ resource "aws_security_group" "sg_private_instances" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "Allow https from public subnet."
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    security_groups = [aws_security_group.sg_public_instances.id]
-  }
-
-  ingress {
     description     = "Allow http from public subnet."
     from_port       = 80
     to_port         = 80
@@ -87,6 +71,37 @@ resource "aws_security_group" "sg_private_instances" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = var.tags
+}
+
+resource "aws_security_group" "sg_alb" {
+  name        = "sg_alb"
+  description = "Application Load Balancer Security Group."
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "Allow http from internet."
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "ICMP"
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "http"
+    security_group = aws_security_group.sg_public_instances.id
   }
 
   tags = var.tags

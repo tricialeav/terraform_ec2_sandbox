@@ -8,8 +8,3 @@ variable "public_instances" {
   description = "EC2 instance ID."
   type        = list(string)
 }
-
-variable "dependency" {
-  description = "The IGW explicit dependency."
-  type        = any
-}

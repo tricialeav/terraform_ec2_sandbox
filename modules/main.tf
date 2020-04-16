@@ -41,13 +41,20 @@ module "igw" {
   tags   = var.tags
 }
 
+#TODO HTTPS traffic (requires certificate)
 module "alb" {
-  source          = "./load_balancer"
-  name            = "sandbox-load-balancer"
-  internal        = true
-  security_groups = [module.security_groups.sg_public_instances]
-  subnet_ids      = module.public_subnets.subnet_ids
-  tags            = var.tags
+  source                        = "./app_load_balancer"
+  name                          = "sandbox-load-balancer"
+  internal                      = false
+  security_groups               = [module.security_groups.sg_alb]
+  subnet_ids                    = module.public_subnets.subnet_ids
+  port                          = 80
+  protocol                      = "HTTP"
+  vpc_id                        = module.vpc.vpc_id
+  load_balancing_algorithm_type = "round_robin"
+  target_type                   = "instance"
+  target_ids                    = module.ec2_public_instances.instance_ids
+  tags                          = var.tags
 }
 
 module "public_route_table" {
@@ -119,6 +126,17 @@ module "public_network_acl" {
     }
   ]
 
+  outbound_nacl_rules = [
+    {
+      rule_number = 100
+      protocol    = "-1"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = null
+      to_port     = null
+    }
+  ]
+
   tags      = var.tags
   nacl_tags = var.public_tags
 }
@@ -151,6 +169,17 @@ module "private_network_acl" {
     }
   ]
 
+  outbound_nacl_rules = [
+    {
+      rule_number = 100
+      protocol    = "-1"
+      rule_action = "allow"
+      cidr_block  = var.public_internet_cidr
+      from_port   = null
+      to_port     = null
+    }
+  ]
+
   tags      = var.tags
   nacl_tags = var.private_tags
 }
@@ -158,7 +187,6 @@ module "private_network_acl" {
 module "eip" {
   source           = "./eip"
   public_instances = module.ec2_public_instances.instance_ids
-  dependency       = module.igw
 }
 
 module "ec2_private_instances" {
@@ -181,6 +209,7 @@ module "ec2_public_instances" {
   instance_type          = var.instance_type
   vpc_security_group_ids = [module.security_groups.sg_public_instances]
   subnet_ids             = module.public_subnets.subnet_ids
+  associate_public_ip_address = true
   tags                   = var.tags
   ec2_tags = {
     Name = "Public EC2"
