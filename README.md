@@ -1,5 +1,3 @@
-# TODO Update docs for multi-AZ - In Progress 
-
 # Terraform AWS EC2 Sandbox Environment
 
 # Introduction
@@ -7,7 +5,7 @@
 This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandbox environment in the us-west-2 (Oregon) region/us-west-2a Availability Zone. The environment includes: 
 
 1. Single VPC with an Internet Gateway
-2. Public Subnet
+2. 2 Public Subnets
     1. Public Route Table
         1. Public ipv4 destination with IGW target
         2. Public ipv6 destination with IGW target
@@ -22,9 +20,9 @@ This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandb
         1. Allow Ping and SSH from my IP
         2. Allow HTTP and HTTPS from public internet
     4. Public EC2 Instance
-        1. Amazon Linux 2 AMI 2.0.20200406.0 x86_64 HVM gp2 t2.micro
+        1. Amazon Linux 2 AMI 2.0.20200406.0 x86_64 HVM gp2 t2.micro - in progress
         2. IPV4 Public IP address
-3. Private Subnet
+3. 2 Private Subnets
     1. Private Route Table
         1. Local Target
     2. Private Subnet Network ACL
@@ -33,7 +31,7 @@ This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandb
     3. Private Security Group
         1. Allow HTTP and HTTPS from Public Subnet CIDR
     4. Private EC2 Instance
-        1. Amazon Linux 2 AMI 2.0.20200406.0 x86_64 HVM gp2 t2.micro
+        1. Amazon Linux 2 AMI 2.0.20200406.0 x86_64 HVM gp2 t2.micro - in progress
 
 # Prerequisites
 
