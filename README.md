@@ -26,8 +26,9 @@ This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandb
     1. Private Route Table
         1. Local Target
     2. Private Subnet Network ACL
-        1. HTTP (from VPC CIDR)
-        2. HTTPS (from VPC CIDR)
+        1. Inbounv Allow
+            1. HTTP (from VPC CIDR)
+            2. HTTPS (from VPC CIDR)
     3. Private Security Group
         1. Allow HTTP and HTTPS from Public Subnet CIDR
     4. Private EC2 Instance
