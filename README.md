@@ -2,7 +2,7 @@
 
 # Introduction
 
-This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandbox environment in the us-west-2 (Oregon) region/us-west-2a us-west-2b Availability Zones. The environment includes: 
+This project uses Terraform (Infrastructure as Code) to spin up an AWS EC2 sandbox environment in the us-west-2 (Oregon) region/us-west-2a & us-west-2b Availability Zones. The environment includes: 
 
 1. Single VPC with an Internet Gateway
 2. 2 Public Subnets
