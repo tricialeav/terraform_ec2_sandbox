@@ -32,13 +32,22 @@ module "security_groups" {
   source     = "./security_groups"
   vpc_id     = module.vpc.vpc_id
   private_ip = var.private_ip
-  tags = var.tags
+  tags       = var.tags
 }
 
 module "igw" {
   source = "./internet_gw"
   vpc_id = module.vpc.vpc_id
   tags   = var.tags
+}
+
+module "alb" {
+  source          = "./load_balancer"
+  name            = "sandbox-load-balancer"
+  internal        = true
+  security_groups = [module.security_groups.sg_public_instances]
+  subnet_ids      = module.public_subnets.subnet_ids
+  tags            = var.tags
 }
 
 module "public_route_table" {
@@ -146,6 +155,12 @@ module "private_network_acl" {
   nacl_tags = var.private_tags
 }
 
+module "eip" {
+  source           = "./eip"
+  public_instances = module.ec2_public_instances.instance_ids
+  dependency       = module.igw
+}
+
 module "ec2_private_instances" {
   source                 = "./ec2"
   ami                    = var.ami
@@ -160,14 +175,13 @@ module "ec2_private_instances" {
 }
 
 module "ec2_public_instances" {
-  source                      = "./ec2"
-  ami                         = var.ami
-  key_name                    = var.key_name
-  instance_type               = var.instance_type
-  vpc_security_group_ids      = [module.security_groups.sg_public_instances]
-  subnet_ids                  = module.public_subnets.subnet_ids
-  associate_public_ip_address = true
-  tags                        = var.tags
+  source                 = "./ec2"
+  ami                    = var.ami
+  key_name               = var.key_name
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [module.security_groups.sg_public_instances]
+  subnet_ids             = module.public_subnets.subnet_ids
+  tags                   = var.tags
   ec2_tags = {
     Name = "Public EC2"
   }
